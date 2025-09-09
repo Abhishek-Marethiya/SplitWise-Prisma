@@ -55,7 +55,8 @@ exports.signup = async (req, res) => {
     }
     console.log("Inside signup controller..");
     
-    const exists = false;
+    // const exists = false;
+    const exists=await User.exists({email})
     console.log(exists);
     
     if (exists) {
