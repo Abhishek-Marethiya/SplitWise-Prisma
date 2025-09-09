@@ -18,4 +18,73 @@ datasource db {
 model User{
   id String @id @default(uuid())
   name String @db.VarChar(225)
+  email String @unique 
+  password String 
+  owes     Owes[]
+  owedBy   OwedBy[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+model Owes{
+  id String @id @default(uuid())
+  to String
+  amount Float
+  expenseId String?
+  expense Expense? @relation(fields: [expenseId], references: [id])
+  groupId String?
+  group Group? @relation(fields: [groupId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+}
+
+
+model OwedBy {
+  id        String  @id @default(uuid())
+  from      String
+  amount    Float
+  expenseId String?
+  expense Expense? @relation(fields: [expenseId], references: [id])
+  groupId   String?
+  group Group? @relation(fields: [groupId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+
+model Group{
+  id String @id @default(uuid())
+  name String @unique 
+  participants String[]
+  expenses Expense[]
+  owes Owes[]
+  owedBy OwedBy[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Expense{
+  id String @id @default(uuid())
+  groupId String?
+  group Group? @relation(fields: [groupId], references: [id])
+  description String
+  amount Float
+  paidBy String
+  splitType String @default("equal")
+  date DateTime @default(now())
+  splitBetween SplitBetween[]
+  owes Owes[]
+  owedBy OwedBy[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SplitBetween {
+  id String @id @default(uuid())
+  memberName String
+  share Float
+  expenseId String
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+}
+
